@@ -91,18 +91,65 @@ public class CountriesServiceTest
         Country newCountry = testCountry.ToCountry();
         newCountry.CountryId = newCountryId;
 
+
         CountryResponse expected = newCountry.ToCountryResponse();
+
+
 
         //Act
         CountryResponse actual = _countriesService.AddCountry(testCountry);
+        var allCountries = _countriesService.GetAllCountries();
 
         //Assert
         Assert.True(actual.CountryId != Guid.Empty);
+        Assert.Contains(actual, allCountries);
     }
 
     #endregion
 
     #region GetAllCountries
+
+    /*
+        The list of countries should be empty by default
+    */
+    [Fact]
+    public void GetAllCountries_EmptyList()
+    {
+        // Act
+        List<CountryResponse> actual_country_response_list
+                    = _countriesService.GetAllCountries();
+        // Assert
+        Assert.Empty(actual_country_response_list);
+    }
+
+    [Fact]
+    public void GetAllCountries_WithTwoCountries()
+    {
+        // Arrange
+        List<CountryAddRequest> country_request_list =
+        new List<CountryAddRequest>()
+        {
+            new CountryAddRequest(){ CountryName = "United States"},
+            new CountryAddRequest(){ CountryName = "United Kingdom"}
+        };
+        List<CountryResponse> add_country_response_list =
+        new List<CountryResponse>();
+
+        foreach (var country_request in country_request_list)
+        {
+            add_country_response_list.Add(_countriesService.AddCountry(country_request));
+        }
+
+        //Act
+        List<CountryResponse> actual_country_response_list = _countriesService.GetAllCountries();
+
+        // Assert
+        foreach (var expected_country_response in add_country_response_list)
+        {
+            Console.WriteLine(expected_country_response.CountryName);
+            Assert.Contains(expected_country_response, actual_country_response_list);
+        }
+    }
 
 
     #endregion
