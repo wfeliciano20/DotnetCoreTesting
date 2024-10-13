@@ -154,4 +154,58 @@ public class CountriesServiceTest
 
     #endregion
 
+    #region  GetCountryById
+
+    [Fact]
+    public void GetCountryByID_returnsNullWithNullID()
+    {
+        // Arrange
+        Guid? countryID = null;
+        // Act
+        CountryResponse? result = _countriesService.GetCountryByID(countryID);
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void GetCountryByID_returnsCountryWhenValidIDIsGiven()
+    {
+        // Arrange
+        CountryAddRequest countryAdd = new CountryAddRequest()
+        {
+            CountryName = "United States"
+        };
+
+        CountryResponse expectedCountry = _countriesService.AddCountry(countryAdd);
+
+        // Act
+        CountryResponse? actualResponse = _countriesService.GetCountryByID(expectedCountry.CountryId);
+
+        Assert.Equal(expectedCountry, actualResponse);
+    }
+
+    [Fact]
+    public void GetCountryByID_returnNullWhenGivenInvalidID()
+    {
+        // Arrange
+        Guid invalidID = Guid.NewGuid();
+
+        CountryAddRequest countryAdd = new CountryAddRequest()
+        {
+            CountryName = "United States"
+        };
+
+        CountryResponse expectedCountry = _countriesService.AddCountry(countryAdd);
+
+        // Act
+        CountryResponse? actual_response = _countriesService.GetCountryByID(invalidID);
+
+        // Assert
+
+        Assert.Null(actual_response);
+    }
+
+
+
+    #endregion
 }

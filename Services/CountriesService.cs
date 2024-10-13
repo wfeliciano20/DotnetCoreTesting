@@ -52,4 +52,21 @@ public class CountriesService : ICountriesService
     {
         return _countries.Select(c => c.ToCountryResponse()).ToList();
     }
+
+    public CountryResponse? GetCountryByID(Guid? id)
+    {
+        if (id is null)
+        {
+            return null;
+        }
+
+        Country? found_country = _countries.FirstOrDefault(c => c.CountryId == id);
+
+        if (found_country is null)
+        {
+            return null;
+        }
+
+        return found_country.ToCountryResponse();
+    }
 }
