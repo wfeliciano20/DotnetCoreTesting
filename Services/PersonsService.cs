@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using Entities;
 using ServiceContracts;
 using ServiceContracts.DTO;
+using Services.Helpers;
 
 namespace Services
 {
@@ -25,10 +27,8 @@ namespace Services
                 throw new ArgumentNullException("Argument can't be null");
             }
 
-            if (personAddRequest.PersonName is null)
-            {
-                throw new ArgumentException("PersonName can't be null");
-            }
+            // Model Validation throws ArgumentException if model is invalid
+            ValidationHelper.ModelValidation(personAddRequest);
 
             // Convert to Person
             Person newPerson = personAddRequest.ToPerson();
@@ -50,9 +50,28 @@ namespace Services
             return newPersonResponse;
         }
 
-        public List<PersonResponse> GetAllPersons()
+        public List<PersonResponse> GetAllPeople()
         {
             return _people.Select(p => ConvertPersonToPersonResponse(p)).ToList();
         }
+
+        public PersonResponse? GetPersonByPersonID(Guid? personID)
+        {
+            if (personID is null)
+            {
+                return null;
+            }
+
+            Person? foundPerson = _people.FirstOrDefault(p => p.PersonID == personID);
+
+            if (foundPerson is null)
+            {
+                return null;
+            }
+
+            return ConvertPersonToPersonResponse(foundPerson);
+        }
+
+
     }
 }
