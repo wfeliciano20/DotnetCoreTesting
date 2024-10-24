@@ -1,15 +1,25 @@
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllersWithViews();
-
-var app = builder.Build();
-
-if (builder.Environment.IsDevelopment())
+using ServiceContracts;
+using Services;
+internal class Program
 {
-    app.UseDeveloperExceptionPage();
-}
-app.UseStaticFiles();
-app.UseRouting();
-app.MapControllers();
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-app.Run();
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddSingleton<ICountriesService, CountriesService>();
+        builder.Services.AddSingleton<IPeopleService, PeopleService>();
+
+        var app = builder.Build();
+
+        if (builder.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.MapControllers();
+
+        app.Run();
+    }
+}

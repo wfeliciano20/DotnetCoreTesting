@@ -7,7 +7,7 @@ using Services.Helpers;
 
 namespace Services
 {
-    public class PersonsService : IPersonsService
+    public class PeopleService : IPeopleService
     {
 
         private List<Person> _people;
@@ -15,10 +15,69 @@ namespace Services
         private readonly ICountriesService _countriesService;
 
 
-        public PersonsService()
+        public PeopleService(bool initialize = true)
         {
             _people = new List<Person>();
-            _countriesService = new CountriesService();
+            _countriesService = new CountriesService(false);
+            if (initialize)
+            {
+                _people.AddRange(
+                    new List<Person>()
+                    {
+                        new Person()
+                        {
+                            PersonID = Guid.Parse("a70565d2-9c96-4271-8115-2328346c4f0a"),
+                            PersonName = "Toddie",
+                            Email = "tstegers0@geocities.jp",
+                            Address = "17 Portage Terrace",
+                            DateOfBirth = DateTime.Parse("1997-05-22"),
+                            CountryID = Guid.Parse("fb4fd053-27aa-4f82-b943-cb4808ce3918"),
+                            Gender = "Male",
+                            ReceiveNewsLetter = true
+                        }, new Person()
+                        {
+                            PersonID = Guid.Parse("d8f0b56e-0624-49ad-b825-133de7568287"),
+                            PersonName = "Eberhard",
+                            Email = "eadamovicz1@yolasite.com",
+                            Address = "88 Veith Street",
+                            DateOfBirth = DateTime.Parse("1990-04-25"),
+                            CountryID = Guid.Parse("da0c5257-0b7b-4e69-892d-3cdfa6d08564"),
+                            Gender = "Male",
+                            ReceiveNewsLetter = false
+                        }, new Person()
+                        {
+                            PersonID = Guid.Parse("ca482969-0d0d-4ce6-ba4e-2e3ddcb6bb99"),
+                            PersonName = "Kassey",
+                            Email = "kspearett2@globo.com",
+                            Address = "13177 Rockefeller Avenue",
+                            DateOfBirth = DateTime.Parse("1991-12-01"),
+                            CountryID = Guid.Parse("fee3ee7d-f715-4da2-8a0c-f70462cc26f7"),
+                            Gender = "Female",
+                            ReceiveNewsLetter = true
+                        }, new Person()
+                        {
+                            PersonID = Guid.Parse("6226f1c9-dda4-47eb-a7f5-8e7c8ac8d027"),
+                            PersonName = "Keriann",
+                            Email = "kspringtorpe3@accuweather.com",
+                            Address = "427 Armistice Plaza",
+                            DateOfBirth = DateTime.Parse("1993-06-17"),
+                            CountryID = Guid.Parse("06e68e72-5619-4b5b-8a00-fccda2c20fd9"),
+                            Gender = "Female",
+                            ReceiveNewsLetter = true
+                        }, new Person()
+                        {
+                            PersonID = Guid.Parse("d2d19459-7860-4dfb-93f2-3efb657ac6ad"),
+                            PersonName = "Fred",
+                            Email = "fsedcole4@harvard.edu",
+                            Address = "2 Forest Park",
+                            DateOfBirth = DateTime.Parse("1990-12-11"),
+                            CountryID = Guid.Parse("06e68e72-5619-4b5b-8a00-fccda2c20fd9"),
+                            Gender = "Female",
+                            ReceiveNewsLetter = false
+                        }
+                    }
+                );
+            }
         }
 
         public PersonResponse AddPerson(PersonAddRequest? personAddRequest)

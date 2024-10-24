@@ -6,7 +6,7 @@ namespace ServiceContracts
     /// <summary>
     /// Represents Business Logic for manipulating Person entity
     /// </summary>
-    public interface IPersonsService
+    public interface IPeopleService
     {
         /// <summary>
         /// Adds a new Person object into a Person List

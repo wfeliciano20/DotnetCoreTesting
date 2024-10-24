@@ -11,15 +11,15 @@ namespace CRUDTests
     public class PersonsServiceTest
     {
 
-        private readonly IPersonsService _personsService;
+        private readonly IPeopleService _peopleService;
         private readonly ICountriesService _countriesService;
 
         private readonly ITestOutputHelper _testOutputHelper;
 
         public PersonsServiceTest(ITestOutputHelper testOutputHelper)
         {
-            _personsService = new PersonsService();
-            _countriesService = new CountriesService();
+            _peopleService = new PeopleService();
+            _countriesService = new CountriesService(false);
             _testOutputHelper = testOutputHelper;
         }
 
@@ -36,7 +36,7 @@ namespace CRUDTests
             Assert.Throws<ArgumentNullException>(() =>
             {
                 // Act
-                _personsService.AddPerson(personAddRequest);
+                _peopleService.AddPerson(personAddRequest);
             });
         }
 
@@ -54,7 +54,7 @@ namespace CRUDTests
             Assert.Throws<ArgumentException>(() =>
             {
                 // Act
-                _personsService.AddPerson(addRequest);
+                _peopleService.AddPerson(addRequest);
             });
         }
 
@@ -75,8 +75,8 @@ namespace CRUDTests
             };
 
             // Act
-            PersonResponse actual = _personsService.AddPerson(personAddRequest);
-            List<PersonResponse> persons_list = _personsService.GetAllPeople(null, null, null, null);
+            PersonResponse actual = _peopleService.AddPerson(personAddRequest);
+            List<PersonResponse> persons_list = _peopleService.GetAllPeople(null, null, null, null);
 
             // Assert
             Assert.True(actual.PersonID != Guid.Empty);
@@ -93,7 +93,7 @@ namespace CRUDTests
             // Arrange
             Guid? personId = null;
 
-            PersonResponse? actualResponse = _personsService.GetPersonByPersonID(personId);
+            PersonResponse? actualResponse = _peopleService.GetPersonByPersonID(personId);
             // Assert
             Assert.Null(actualResponse);
         }
@@ -117,10 +117,10 @@ namespace CRUDTests
             };
 
             // Add the person to the list of persons and save its new guid id
-            PersonResponse expectedPersonResponse = _personsService.AddPerson(personAddRequest);
+            PersonResponse expectedPersonResponse = _peopleService.AddPerson(personAddRequest);
 
             //Act
-            PersonResponse? actualPersonResponse = _personsService.GetPersonByPersonID(expectedPersonResponse.PersonID);
+            PersonResponse? actualPersonResponse = _peopleService.GetPersonByPersonID(expectedPersonResponse.PersonID);
 
             // Assert
             Assert.Equal(expectedPersonResponse, actualPersonResponse);
@@ -134,7 +134,7 @@ namespace CRUDTests
         public void GetAllPeople_EmptyListIfNoPeopleAddedNoSortNoFilter()
         {
             // Act
-            List<PersonResponse> personResponse = _personsService.GetAllPeople(null, null, null, null);
+            List<PersonResponse> personResponse = _peopleService.GetAllPeople(null, null, null, null);
 
             // Assert
             Assert.Empty(personResponse);
@@ -150,12 +150,12 @@ namespace CRUDTests
             _testOutputHelper.WriteLine("EXPECTED:");
             foreach (var person in peopleToAdd)
             {
-                PersonResponse personResponse = _personsService.AddPerson(person);
+                PersonResponse personResponse = _peopleService.AddPerson(person);
                 expectedPeople.Add(personResponse);
                 _testOutputHelper.WriteLine(personResponse.ToString());
             }
 
-            List<PersonResponse> actualPeople = _personsService.GetAllPeople(null, null, null, null);
+            List<PersonResponse> actualPeople = _peopleService.GetAllPeople(null, null, null, null);
 
             _testOutputHelper.WriteLine("ACTUAL:");
 
@@ -182,12 +182,12 @@ namespace CRUDTests
 
             foreach (var person in peopleToAdd)
             {
-                PersonResponse personResponse = _personsService.AddPerson(person);
+                PersonResponse personResponse = _peopleService.AddPerson(person);
                 expectedPeople.Add(personResponse);
                 _testOutputHelper.WriteLine(personResponse.ToString());
             }
 
-            List<PersonResponse> actualPeople = _personsService.GetAllPeople("PersonName", "", null, null);
+            List<PersonResponse> actualPeople = _peopleService.GetAllPeople("PersonName", "", null, null);
 
             _testOutputHelper.WriteLine("ACTUAL:");
 
@@ -215,12 +215,12 @@ namespace CRUDTests
 
             foreach (var person in peopleToAdd)
             {
-                PersonResponse personResponse = _personsService.AddPerson(person);
+                PersonResponse personResponse = _peopleService.AddPerson(person);
                 expectedPeople.Add(personResponse);
                 _testOutputHelper.WriteLine(personResponse.ToString());
             }
 
-            List<PersonResponse> actualPeople = _personsService.GetAllPeople(null, null, "PersonName", SortOptions.ASC);
+            List<PersonResponse> actualPeople = _peopleService.GetAllPeople(null, null, "PersonName", SortOptions.ASC);
 
             _testOutputHelper.WriteLine("ACTUAL:");
 
@@ -247,12 +247,12 @@ namespace CRUDTests
 
             foreach (var person in peopleToAdd)
             {
-                PersonResponse personResponse = _personsService.AddPerson(person);
+                PersonResponse personResponse = _peopleService.AddPerson(person);
                 expectedPeople.Add(personResponse);
                 _testOutputHelper.WriteLine(personResponse.ToString());
             }
 
-            List<PersonResponse> actualPeople = _personsService.GetAllPeople(null, null, "PersonName", SortOptions.DESC);
+            List<PersonResponse> actualPeople = _peopleService.GetAllPeople(null, null, "PersonName", SortOptions.DESC);
 
             _testOutputHelper.WriteLine("ACTUAL:");
 
@@ -277,7 +277,7 @@ namespace CRUDTests
             // Arrange
             PersonAddRequest personAdd = CreateOnePerson();
 
-            PersonResponse addedPerson = _personsService.AddPerson(personAdd);
+            PersonResponse addedPerson = _peopleService.AddPerson(personAdd);
 
             PersonUpdateRequest personUpdateRequest = addedPerson.ToPersonUpdateRequest();
 
@@ -285,7 +285,7 @@ namespace CRUDTests
 
             Assert.Throws<ArgumentException>(() =>
             {
-                _personsService.UpdatePerson(personUpdateRequest);
+                _peopleService.UpdatePerson(personUpdateRequest);
             });
         }
 
@@ -295,7 +295,7 @@ namespace CRUDTests
             // Arrange
             PersonAddRequest personAdd = CreateOnePerson();
 
-            PersonResponse addedPerson = _personsService.AddPerson(personAdd);
+            PersonResponse addedPerson = _peopleService.AddPerson(personAdd);
 
             PersonUpdateRequest personUpdateRequest = addedPerson.ToPersonUpdateRequest();
 
@@ -307,7 +307,7 @@ namespace CRUDTests
 
             Assert.Throws<ArgumentException>(() =>
             {
-                _personsService.UpdatePerson(personUpdateRequest);
+                _peopleService.UpdatePerson(personUpdateRequest);
             });
         }
 
@@ -318,7 +318,7 @@ namespace CRUDTests
             // Arrange
             PersonAddRequest personAdd = CreateOnePerson();
 
-            PersonResponse addedPerson = _personsService.AddPerson(personAdd);
+            PersonResponse addedPerson = _peopleService.AddPerson(personAdd);
 
             PersonUpdateRequest personUpdateRequest = addedPerson.ToPersonUpdateRequest();
 
@@ -326,9 +326,9 @@ namespace CRUDTests
 
             personUpdateRequest.Email = "william@example.com";
 
-            PersonResponse actualResponse = _personsService.UpdatePerson(personUpdateRequest);
+            PersonResponse actualResponse = _peopleService.UpdatePerson(personUpdateRequest);
 
-            PersonResponse? expectedResponse = _personsService.GetPersonByPersonID(personUpdateRequest.PersonID);
+            PersonResponse? expectedResponse = _peopleService.GetPersonByPersonID(personUpdateRequest.PersonID);
 
             Assert.Equal(expectedResponse, actualResponse);
 
@@ -337,7 +337,6 @@ namespace CRUDTests
 
 
         #endregion
-
 
         #region DeletePerson
 
@@ -348,7 +347,7 @@ namespace CRUDTests
 
             Assert.Throws<ArgumentNullException>(() =>
             {
-                _personsService.DeletePerson(id);
+                _peopleService.DeletePerson(id);
             });
         }
 
@@ -359,7 +358,7 @@ namespace CRUDTests
 
             Assert.Throws<ArgumentException>(() =>
             {
-                _personsService.DeletePerson(wrongId);
+                _peopleService.DeletePerson(wrongId);
             });
         }
 
@@ -368,13 +367,13 @@ namespace CRUDTests
         {
             PersonAddRequest personAddRequest = CreateOnePerson();
 
-            PersonResponse personResponse = _personsService.AddPerson(personAddRequest);
+            PersonResponse personResponse = _peopleService.AddPerson(personAddRequest);
 
-            List<PersonResponse> initialAllPeople = _personsService.GetAllPeople(null, null, null, null);
+            List<PersonResponse> initialAllPeople = _peopleService.GetAllPeople(null, null, null, null);
 
-            bool actualResponse = _personsService.DeletePerson(personResponse.PersonID);
+            bool actualResponse = _peopleService.DeletePerson(personResponse.PersonID);
 
-            List<PersonResponse> finallAllPeople = _personsService.GetAllPeople(null, null, null, null);
+            List<PersonResponse> finallAllPeople = _peopleService.GetAllPeople(null, null, null, null);
 
             Assert.True(actualResponse);
 
@@ -382,7 +381,6 @@ namespace CRUDTests
         }
 
         #endregion
-
 
         #region helper Methods
 
