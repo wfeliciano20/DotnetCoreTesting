@@ -150,5 +150,24 @@ namespace Services
 
             return foundPerson.ToPersonResponse();
         }
+
+        public bool DeletePerson(Guid? personID)
+        {
+            if (personID is null)
+            {
+                throw new ArgumentNullException("PersonID must be provided");
+            }
+
+            Person? personFound = _people.Find(p => p.PersonID == personID);
+
+            if (personFound is null)
+            {
+                throw new ArgumentException("Person Not Found");
+            }
+
+            return _people.Remove(personFound);
+
+
+        }
     }
 }

@@ -34,14 +34,19 @@ namespace ServiceContracts
         /// <returns>Matching Person</returns>
         PersonResponse? GetPersonByPersonID(Guid? personID);
 
-        // /// <summary>
-        // /// Returns a List of People that match the property of the searchBy with the value of the search string 
-        // /// </summary>
-        // /// <param name="searchBy">The Property you want to filtered with</param>
-        // /// <param name="searchString">The actual text value to filter with</param>
-        // /// <returns>The List of people that match the filter criteria</returns>
-        // List<PersonResponse>? GetFilteredPeople(string searchBy, string? searchString);
 
+        /// <summary>
+        /// Updates a Person Object with the properties of the provided PersonUpdateRequest
+        /// </summary>
+        /// <param name="personUpdateRequest">An object with the values to be updated</param>
+        /// <returns>A PersonResponse object with the validated properties</returns>
         PersonResponse UpdatePerson(PersonUpdateRequest? personUpdateRequest);
+
+        /// <summary>
+        /// Deletes a person with the provided Guid id if the object is found.
+        /// </summary>
+        /// <param name="personID">The Guid to locate the person to delete</param>
+        /// <returns>True if the deletion is successful False otherwise</returns>
+        bool DeletePerson(Guid? personID);
     }
 }

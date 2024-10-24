@@ -338,6 +338,52 @@ namespace CRUDTests
 
         #endregion
 
+
+        #region DeletePerson
+
+        [Fact]
+        public void DeletePerson_PersonIdNUll()
+        {
+            Guid? id = null;
+
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _personsService.DeletePerson(id);
+            });
+        }
+
+        [Fact]
+        public void DeletePerson_PersonIdWrong()
+        {
+            Guid wrongId = Guid.NewGuid();
+
+            Assert.Throws<ArgumentException>(() =>
+            {
+                _personsService.DeletePerson(wrongId);
+            });
+        }
+
+        [Fact]
+        public void DeletePerson_PersonIdValid()
+        {
+            PersonAddRequest personAddRequest = CreateOnePerson();
+
+            PersonResponse personResponse = _personsService.AddPerson(personAddRequest);
+
+            List<PersonResponse> initialAllPeople = _personsService.GetAllPeople(null, null, null, null);
+
+            bool actualResponse = _personsService.DeletePerson(personResponse.PersonID);
+
+            List<PersonResponse> finallAllPeople = _personsService.GetAllPeople(null, null, null, null);
+
+            Assert.True(actualResponse);
+
+            Assert.NotEqual(initialAllPeople, finallAllPeople);
+        }
+
+        #endregion
+
+
         #region helper Methods
 
         private PersonAddRequest CreateOnePerson()
