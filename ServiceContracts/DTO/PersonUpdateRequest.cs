@@ -18,14 +18,20 @@ namespace ServiceContracts.DTO
 
         [Required(ErrorMessage = "Email can't be null")]
         [EmailAddress(ErrorMessage = "Email has to be a valid email")]
+        [DataType(DataType.EmailAddress)]
         public string? Email { get; set; }
 
+        [Required(ErrorMessage = "Enter a valid date")]
+        [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
 
+        [Required(ErrorMessage = "Select a gender")]
         public GenderOptions? Gender { get; set; }
 
+        [Required(ErrorMessage = "Select a country")]
         public Guid? CountryID { get; set; }
 
+        [Required(ErrorMessage = "Address is required")]
         public string? Address { get; set; }
 
         [Required(ErrorMessage = "ReceiveNewsLetter is required.")]

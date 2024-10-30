@@ -4,35 +4,103 @@
     ViewBag.Title = "People";
 }
 
-<h1>People</h1>
 
-<table class="table w-100 mt">
-    <thead>
-        <tr>
-            <th>Person Name</th>
-            <th>Email</th>
-            <th>Date of Birth</th>
-            <th>Age</th>
-            <th>Gender</th>
-            <th>Country</th>
-            <th>Address</th>
-            <th>Receives News Letters</th>
-        </tr>
-    </thead>
+<form method="get" asp-controller="People" asp-action="Index">
+    <a asp-controller="People" asp-action="Create">Create Person</a>
+    <h1>People</h1>
 
-    <Tbody>
-        @foreach(PersonResponse person in Model)
-        {
+    <div class="box flex">
+        <div class="flex-1">
+            <select class="form-input" name="searchBy" id="searchBy">
+                @foreach(var field in ViewBag.SearchFields)
+                {
+                    if(field.Key == ViewBag.SearchBy){
+                        <option value="@field.Key" selected="selected">@field.Value</option>
+                    }
+                    else{
+                        <option value="@field.Key">@field.Value</option>
+                    }
+                    
+                }
+            </select>
+        </div>
+        <div class="flex-1">
+            <input type="search" name="searchString" id="Search" class="form-input" placeholder="Search" value="@ViewBag.SearchString">
+        </div>
+        <div class="flex-1">
+            <button type="submit" class="button button-blue-back">Search</button>
+            <a asp-controller="People" asp-action="Index" class="link-hover">Clear All</a>
+        </div>
+    </div>
+
+
+    <table class="table w-100 mt">
+        <thead>
             <tr>
-                <td>@person.PersonName</td>
-                <td>@person.Email</td>
-                <td>@person.DateOfBirth?.ToString("MM/dd/yyyy")</td>
-                <td>@person.Age</td>
-                <td>@person.Gender</td>
-                <td>@person.Country</td>
-                <td>@person.Address</td>
-                <td>@person.ReceiveNewsLetter</td>
+               @await Html.PartialAsync("_GridColumnHeader", new ViewDataDictionary(ViewData)
+               {
+                { "ColumnName", nameof(PersonResponse.PersonName)},
+                { "DisplayName", "PersonName"}
+               })
+
+                @await Html.PartialAsync("_GridColumnHeader", new ViewDataDictionary(ViewData)
+               {
+                { "ColumnName", nameof(PersonResponse.Email)},
+                { "DisplayName", "Email"}
+               })
+              
+                @await Html.PartialAsync("_GridColumnHeader", new ViewDataDictionary(ViewData)
+               {
+                { "ColumnName", nameof(PersonResponse.DateOfBirth)},
+                { "DisplayName", "Date of Birth"}
+               })
+                 @await Html.PartialAsync("_GridColumnHeader", new ViewDataDictionary(ViewData)
+               {
+                { "ColumnName", nameof(PersonResponse.Age)},
+                { "DisplayName", "Age"}
+               })
+                 @await Html.PartialAsync("_GridColumnHeader", new ViewDataDictionary(ViewData)
+               {
+                { "ColumnName", nameof(PersonResponse.Gender)},
+                { "DisplayName", "Gender"}
+               })
+
+                @await Html.PartialAsync("_GridColumnHeader", new ViewDataDictionary(ViewData)
+               {
+                { "ColumnName", nameof(PersonResponse.Country)},
+                { "DisplayName", "Country"}
+               })
+                 @await Html.PartialAsync("_GridColumnHeader", new ViewDataDictionary(ViewData)
+               {
+                { "ColumnName", nameof(PersonResponse.Address)},
+                { "DisplayName", "Address"}
+               })
+                 @await Html.PartialAsync("_GridColumnHeader", new ViewDataDictionary(ViewData)
+               {
+                { "ColumnName", nameof(PersonResponse.ReceiveNewsLetter)},
+                { "DisplayName", "Receives News Letters"}
+               })
+               <td>Actions</td>
             </tr>
-        }
-    </Tbody>
-</table>
+        </thead>
+
+        <Tbody>
+            @foreach(PersonResponse person in Model)
+            {
+                <tr>
+                    <td style="width: 15%;">@person.PersonName</td>
+                    <td style="width: 20%;">@person.Email</td>
+                    <td style="width: 13%;">@person.DateOfBirth?.ToString("MM/dd/yyyy")</td>
+                    <td style="width: 7%;">@person.Age</td>
+                    <td style="width: 9%;">@person.Gender</td>
+                    <td style="width: 10%;">@person.Country</td>
+                    <td style="width: 10%;">@person.Address</td>
+                    <td style="width: 8%;">@person.ReceiveNewsLetter</td>
+                    <td style="width: 10%;">
+                        <a asp-controller="People" asp-action="Update" asp-route-personID="@person.PersonID">Edit</a>
+                    </td>
+                </tr>
+            }
+        </Tbody>
+    </table>
+</form>

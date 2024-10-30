@@ -18,7 +18,7 @@ namespace Services
         public PeopleService(bool initialize = true)
         {
             _people = new List<Person>();
-            _countriesService = new CountriesService(false);
+            _countriesService = new CountriesService();
             if (initialize)
             {
                 _people.AddRange(
@@ -72,7 +72,7 @@ namespace Services
                             Address = "2 Forest Park",
                             DateOfBirth = DateTime.Parse("1990-12-11"),
                             CountryID = Guid.Parse("06e68e72-5619-4b5b-8a00-fccda2c20fd9"),
-                            Gender = "Female",
+                            Gender = "Male",
                             ReceiveNewsLetter = false
                         }
                     }
@@ -105,7 +105,14 @@ namespace Services
         {
             PersonResponse newPersonResponse = newPerson.ToPersonResponse();
 
-            newPersonResponse.Country = _countriesService.GetCountryByID(newPersonResponse.CountryID)?.CountryName;
+            if (newPersonResponse.CountryID != null)
+            {
+                newPersonResponse.Country = _countriesService.GetCountryByID(newPersonResponse.CountryID)?.CountryName;
+            }
+            else
+            {
+                throw new ArgumentException("Invalid CountryId");
+            }
 
             return newPersonResponse;
         }
@@ -129,7 +136,7 @@ namespace Services
                     nameof(PersonResponse.Email) => allPeople
                         .Where(p => !string.IsNullOrEmpty(p.Email) && p.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList(),
                     nameof(PersonResponse.DateOfBirth) => allPeople
-                        .Where(p => p.DateOfBirth != null && p.DateOfBirth.Value.ToString("MM/dd/yyyy").Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList(),
+                        .Where(p => p.DateOfBirth != null && p.DateOfBirth.Value.ToString("MM/dd/yyyy").Contains(searchString, StringComparison.Ordinal)).ToList(),
                     nameof(PersonResponse.Gender) => allPeople
                         .Where(p => !string.IsNullOrEmpty(p.Gender) && p.Gender.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList(),
                     nameof(PersonResponse.Country) => allPeople
@@ -152,7 +159,7 @@ namespace Services
                     nameof(PersonResponse.Age) => sortOptions.ToString() == "ASC" ? allPeople.OrderBy(p => p.Age).ToList() : allPeople.OrderByDescending(p => p.Age).ToList(),
                     nameof(PersonResponse.Country) => sortOptions.ToString() == "ASC" ? allPeople.OrderBy(p => p.Country, StringComparer.OrdinalIgnoreCase).ToList() : allPeople.OrderByDescending(p => p.Country, StringComparer.OrdinalIgnoreCase).ToList(),
                     nameof(PersonResponse.CountryID) => sortOptions.ToString() == "ASC" ? allPeople.OrderBy(p => p.CountryID).ToList() : allPeople.OrderByDescending(p => p.CountryID).ToList(),
-                    nameof(PersonResponse.DateOfBirth) => sortOptions.ToString() == "ASC" ? allPeople.OrderBy(p => p.DateOfBirth.ToString(), StringComparer.OrdinalIgnoreCase).ToList() : allPeople.OrderByDescending(p => p.DateOfBirth.ToString(), StringComparer.OrdinalIgnoreCase).ToList(),
+                    nameof(PersonResponse.DateOfBirth) => sortOptions.ToString() == "ASC" ? allPeople.OrderBy(p => p.DateOfBirth).ToList() : allPeople.OrderByDescending(p => p.DateOfBirth).ToList(),
                     nameof(PersonResponse.Gender) => sortOptions.ToString() == "ASC" ? allPeople.OrderBy(p => p.Gender, StringComparer.OrdinalIgnoreCase).ToList() : allPeople.OrderByDescending(p => p.Gender, StringComparer.OrdinalIgnoreCase).ToList(),
                     nameof(PersonResponse.ReceiveNewsLetter) => sortOptions.ToString() == "ASC" ? allPeople.OrderBy(p => p.ReceiveNewsLetter).ToList() : allPeople.OrderByDescending(p => p.ReceiveNewsLetter).ToList(),
                     _ => allPeople
@@ -207,7 +214,7 @@ namespace Services
             // Save the changes
             _people = _people.Select(p => p.PersonID == personUpdateRequest.PersonID ? foundPerson : p).ToList();
 
-            return foundPerson.ToPersonResponse();
+            return ConvertPersonToPersonResponse(foundPerson);
         }
 
         public bool DeletePerson(Guid? personID)

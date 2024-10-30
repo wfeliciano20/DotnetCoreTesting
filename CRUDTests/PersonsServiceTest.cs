@@ -1,5 +1,6 @@
 
 
+using System.Reflection;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.ENUMS;
@@ -18,7 +19,7 @@ namespace CRUDTests
 
         public PersonsServiceTest(ITestOutputHelper testOutputHelper)
         {
-            _peopleService = new PeopleService();
+            _peopleService = new PeopleService(false);
             _countriesService = new CountriesService(false);
             _testOutputHelper = testOutputHelper;
         }
@@ -264,6 +265,7 @@ namespace CRUDTests
                 }
             }
             Assert.Equal(expectedPeople, actualPeople);
+            Assert.NotNull(actualPeople.First().Country);
 
         }
 
