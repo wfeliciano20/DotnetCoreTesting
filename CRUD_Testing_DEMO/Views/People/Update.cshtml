@@ -8,6 +8,7 @@
 
 <div class="center-box">
     <form asp-controller="People" asp-action="Update" method="post">
+        <input type="hidden" asp-for="PersonID">
         @* Person Name *@
         <div class="form-field flex">
             <div class="w-25">

@@ -98,6 +98,7 @@
                     <td style="width: 8%;">@person.ReceiveNewsLetter</td>
                     <td style="width: 10%;">
                         <a asp-controller="People" asp-action="Update" asp-route-personID="@person.PersonID">Edit</a>
+                        <a asp-controller="People" asp-action="Delete" asp-route-personID="@person.PersonID">Delete</a>
                     </td>
                 </tr>
             }

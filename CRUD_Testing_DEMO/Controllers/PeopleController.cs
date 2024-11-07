@@ -49,7 +49,7 @@ namespace CRUD_Testing_DEMO.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-
+            // values for dropdown menu
             List<CountryResponse> allCountries = _countriesService.GetAllCountries();
             ViewBag.AllCountries = allCountries.Select(country =>
             new SelectListItem()
@@ -66,6 +66,7 @@ namespace CRUD_Testing_DEMO.Controllers
         {
             if (!ModelState.IsValid)
             {
+                // values for dropdown menu
                 List<CountryResponse> allCountries = _countriesService.GetAllCountries();
                 ViewBag.AllCountries = allCountries.Select(country =>
                 new SelectListItem()
@@ -86,14 +87,17 @@ namespace CRUD_Testing_DEMO.Controllers
         public IActionResult Update(Guid personID)
         {
 
+            // Check if Id is valid and person exists
             PersonResponse? personResponse = _peopleService.GetPersonByPersonID(personID);
 
 
             if (personResponse is null)
             {
+                // Person not found redirect to index
                 return RedirectToAction("Index");
             }
 
+            // provide values for dropdown menu
             List<CountryResponse> allCountries = _countriesService.GetAllCountries();
             ViewBag.AllCountries = allCountries.Select(country =>
             new SelectListItem()
@@ -103,7 +107,7 @@ namespace CRUD_Testing_DEMO.Controllers
             });
 
 
-
+            // provide the model to the view
             return View(personResponse.ToPersonUpdateRequest());
         }
 
@@ -111,17 +115,21 @@ namespace CRUD_Testing_DEMO.Controllers
         [HttpPost]
         public IActionResult Update(PersonUpdateRequest personUpdateRequest)
         {
-
+            // Check if Id is valid and person exists
             PersonResponse? personResponse = _peopleService.GetPersonByPersonID(personUpdateRequest.PersonID);
 
 
             if (personResponse is null)
             {
+                // Person not found redirect to index
                 return RedirectToAction("Index");
             }
 
             if (!ModelState.IsValid)
             {
+                // redirect to same view
+
+                // provide values for menu
                 List<CountryResponse> allCountries = _countriesService.GetAllCountries();
                 ViewBag.AllCountries = allCountries.Select(country =>
                 new SelectListItem()
@@ -129,11 +137,48 @@ namespace CRUD_Testing_DEMO.Controllers
                     Text = country.CountryName,
                     Value = country.CountryId.ToString()
                 });
+                // Generate server side error list to render on view
                 ViewBag.Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 return View();
             }
+
+            // update the person
             PersonResponse updatedPerson = _peopleService.UpdatePerson(personUpdateRequest);
             return RedirectToAction("Index", "People");
+        }
+
+
+        [Route("[action]/{personID}")]
+        [HttpGet]
+        public IActionResult Delete(Guid? personID)
+        {
+            PersonResponse? personResponse = _peopleService.GetPersonByPersonID(personID);
+
+            if (personResponse is null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return View(personResponse);
+        }
+
+        [Route("[action]/{personID}")]
+        [HttpPost]
+        public IActionResult Delete(PersonUpdateRequest personUpdateRequest)
+        {
+            if (_peopleService.DeletePerson(personUpdateRequest.PersonID))
+            {
+                return RedirectToAction("Index");
+            }
+
+            PersonResponse? personResponse = _peopleService.GetPersonByPersonID(personUpdateRequest.PersonID);
+
+            if (personResponse is null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return RedirectToAction("Index"); ;
         }
     }
 }
