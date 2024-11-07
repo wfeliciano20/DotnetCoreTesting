@@ -1,0 +1,18 @@
+[
+  {
+    "CountryId": "fb4fd053-27aa-4f82-b943-cb4808ce3918",
+    "CountryName": "USA"
+  },
+  {
+    "CountryId": "da0c5257-0b7b-4e69-892d-3cdfa6d08564",
+    "CountryName": "Canada"
+  },
+  {
+    "CountryId": "fee3ee7d-f715-4da2-8a0c-f70462cc26f7",
+    "CountryName": "UK"
+  },
+  {
+    "CountryId": "06e68e72-5619-4b5b-8a00-fccda2c20fd9",
+    "CountryName": "Australia"
+  }
+]

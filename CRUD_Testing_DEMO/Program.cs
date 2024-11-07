@@ -1,3 +1,5 @@
+using Entities;
+using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using Services;
 internal class Program
@@ -9,6 +11,9 @@ internal class Program
         builder.Services.AddControllersWithViews();
         builder.Services.AddSingleton<ICountriesService, CountriesService>();
         builder.Services.AddSingleton<IPeopleService, PeopleService>();
+        builder.Services.AddDbContext<PeopleDbContext>(
+            opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+        );
 
         var app = builder.Build();
 
