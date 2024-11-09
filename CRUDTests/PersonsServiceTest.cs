@@ -1,6 +1,8 @@
 
 
 using System.Reflection;
+using Entities;
+using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.ENUMS;
@@ -19,8 +21,8 @@ namespace CRUDTests
 
         public PersonsServiceTest(ITestOutputHelper testOutputHelper)
         {
-            _peopleService = new PeopleService(false);
-            _countriesService = new CountriesService(false);
+            _countriesService = new CountriesService(new PeopleDbContext(new DbContextOptionsBuilder<PeopleDbContext>().Options));
+            _peopleService = new PeopleService(new PeopleDbContext(new DbContextOptionsBuilder<PeopleDbContext>().Options), _countriesService);
             _testOutputHelper = testOutputHelper;
         }
 
@@ -265,7 +267,7 @@ namespace CRUDTests
                 }
             }
             Assert.Equal(expectedPeople, actualPeople);
-            Assert.NotNull(actualPeople.First().Country);
+            Assert.NotNull(actualPeople?.First().Country);
 
         }
 

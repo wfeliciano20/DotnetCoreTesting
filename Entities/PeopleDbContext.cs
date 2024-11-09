@@ -53,5 +53,10 @@ namespace Entities
                 Console.WriteLine("Error: Seeding People Data");
             }
         }
+
+        public List<Person> sp_GetALLPeople()
+        {
+            return People.FromSqlRaw("EXECUTE [dbo].[GetAllPeople]").ToList();
+        }
     }
 }
