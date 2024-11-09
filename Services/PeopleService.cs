@@ -36,11 +36,16 @@ namespace Services
             // simulate db creation and new guid assignment
             newPerson.PersonID = Guid.NewGuid();
 
+            // Insert into db with stored procedure
+            _dbContext.sp_InsertPerson(newPerson);
+            
+            // ALTERNATIVE WAY
+             
             // add person to list
-            _dbContext.People.Add(newPerson);
+            // _dbContext.People.Add(newPerson);
 
-            // Save Changes
-            _dbContext.SaveChanges();
+            // // Save Changes
+            // _dbContext.SaveChanges();
 
             return ConvertPersonToPersonResponse(newPerson);
         }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 
 namespace Entities
 {
@@ -57,6 +58,22 @@ namespace Entities
         public List<Person> sp_GetALLPeople()
         {
             return People.FromSqlRaw("EXECUTE [dbo].[GetAllPeople]").ToList();
+        }
+
+        public int sp_InsertPerson(Person person)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("@PersonID", person.PersonID),
+                new SqlParameter("@PersonName", person.PersonName),
+                new SqlParameter("@Email", person.Email),
+                new SqlParameter("@DateOfBirth", person.DateOfBirth),
+                new SqlParameter("@Gender", person.Gender),
+                new SqlParameter("@CountryID", person.CountryID),
+                new SqlParameter("@Address", person.Address),
+                new SqlParameter("@ReceiveNewsLetter", person.ReceiveNewsLetter),
+            };
+            return Database.ExecuteSqlRaw("EXECUTE [dbo].[InsertPerson] @PersonID, @PersonName, @Email, @DateOfBirth, @Gender, @CountryID, @Address, @ReceiveNewsLetter",parameters);
         }
     }
 }
