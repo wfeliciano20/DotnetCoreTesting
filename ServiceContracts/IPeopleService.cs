@@ -1,5 +1,6 @@
 using ServiceContracts.DTO;
 using ServiceContracts.ENUMS;
+using System.Threading.Tasks;
 
 namespace ServiceContracts
 {
@@ -13,7 +14,7 @@ namespace ServiceContracts
         /// </summary>
         /// <param name="personAddRequest">The Person to be added to the list</param>
         /// <returns>The Person object with its newly created guid id</returns>
-        PersonResponse AddPerson(PersonAddRequest? personAddRequest);
+        Task<PersonResponse> AddPerson(PersonAddRequest? personAddRequest);
 
 
         /// <summary>
@@ -25,14 +26,14 @@ namespace ServiceContracts
         /// <param name="orderBy">the property on whihc you want to perform the sorting</param>
         /// <param name="sortOptions">The order of the sorting</param>
         /// <returns>The list of people, which can be sorted or filtered</returns>
-        List<PersonResponse> GetAllPeople(string? searchBy, string? searchString, string? orderBy, SortOptions? sortOptions);
+        Task<List<PersonResponse>> GetAllPeople(string? searchBy, string? searchString, string? orderBy, SortOptions? sortOptions);
 
         /// <summary>
         /// Returns a Person that matches the provided id
         /// </summary>
         /// <param name="personID">PersonID to search</param>
         /// <returns>Matching Person</returns>
-        PersonResponse? GetPersonByPersonID(Guid? personID);
+        Task<PersonResponse?> GetPersonByPersonID(Guid? personID);
 
 
         /// <summary>
@@ -40,13 +41,13 @@ namespace ServiceContracts
         /// </summary>
         /// <param name="personUpdateRequest">An object with the values to be updated</param>
         /// <returns>A PersonResponse object with the validated properties</returns>
-        PersonResponse UpdatePerson(PersonUpdateRequest? personUpdateRequest);
+        Task<PersonResponse> UpdatePerson(PersonUpdateRequest? personUpdateRequest);
 
         /// <summary>
         /// Deletes a person with the provided Guid id if the object is found.
         /// </summary>
         /// <param name="personID">The Guid to locate the person to delete</param>
         /// <returns>True if the deletion is successful False otherwise</returns>
-        bool DeletePerson(Guid? personID);
+        Task<bool> DeletePerson(Guid? personID);
     }
 }

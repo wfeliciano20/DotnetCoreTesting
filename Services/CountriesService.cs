@@ -1,4 +1,6 @@
 ﻿using Entities;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using ServiceContracts;
 using ServiceContracts.DTO;
 
@@ -13,7 +15,7 @@ public class CountriesService : ICountriesService
         _countriesDbContext = dbContext;
     }
 
-    public CountryResponse AddCountry(CountryAddRequest? countryAddRequest)
+    public async Task<CountryResponse> AddCountry(CountryAddRequest? countryAddRequest)
     {
 
         // Chack that argument is not null
@@ -29,7 +31,7 @@ public class CountriesService : ICountriesService
         }
 
         // Check for duplicates
-        if (_countriesDbContext.Countries.FirstOrDefault(c => c.CountryName == countryAddRequest.CountryName) != null)
+        if (await _countriesDbContext.Countries.FirstOrDefaultAsync(c => c.CountryName == countryAddRequest.CountryName) != null)
         {
             throw new ArgumentException("A country with the same name already exists.", nameof(countryAddRequest.CountryName));
         }
@@ -41,29 +43,30 @@ public class CountriesService : ICountriesService
         country.CountryId = Guid.NewGuid();
 
         // Add to List
-        _countriesDbContext.Countries.Add(country);
+        await _countriesDbContext.Countries.AddAsync(country);
 
         // Save changes
-        _countriesDbContext.SaveChanges();
+        await _countriesDbContext.SaveChangesAsync();
 
         //return the DTO
         return country.ToCountryResponse();
 
     }
 
-    public List<CountryResponse> GetAllCountries()
+    public async Task<List<CountryResponse>> GetAllCountries()
     {
-        return _countriesDbContext.Countries.ToList().Select(c => c.ToCountryResponse()).ToList();
+        var countries = await _countriesDbContext.Countries.ToListAsync();
+        return countries.Select(c => c.ToCountryResponse()).ToList();
     }
 
-    public CountryResponse? GetCountryByID(Guid? id)
+    public async Task<CountryResponse?> GetCountryByID(Guid? id)
     {
         if (id is null)
         {
             return null;
         }
 
-        Country? found_country = _countriesDbContext.Countries.Find(id);
+        Country? found_country = await _countriesDbContext.Countries.FindAsync(id);
 
         if (found_country is null)
         {

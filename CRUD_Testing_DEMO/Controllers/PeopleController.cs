@@ -23,7 +23,7 @@ namespace CRUD_Testing_DEMO.Controllers
 
         [Route("[action]")]
         [Route("/")]
-        public IActionResult Index(string searchBy, string? searchString, string sortBy = nameof(PersonResponse.PersonName), SortOptions? sortOptions = SortOptions.ASC)
+        public async Task<IActionResult> Index(string searchBy, string? searchString, string sortBy = nameof(PersonResponse.PersonName), SortOptions? sortOptions = SortOptions.ASC)
         {
             Console.WriteLine(searchBy);
             Console.WriteLine(searchString);
@@ -40,17 +40,17 @@ namespace CRUD_Testing_DEMO.Controllers
             ViewBag.SearchBy = searchBy;
             ViewBag.SortBy = sortBy;
             ViewBag.SortOptions = sortOptions.ToString();
-            List<PersonResponse> people = _peopleService.GetAllPeople(searchBy, searchString, sortBy, sortOptions);
+            List<PersonResponse> people = await _peopleService.GetAllPeople(searchBy, searchString, sortBy, sortOptions);
             return View(people);
         }
 
 
         [Route("[action]")]
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             // values for dropdown menu
-            List<CountryResponse> allCountries = _countriesService.GetAllCountries();
+            List<CountryResponse> allCountries = await _countriesService.GetAllCountries();
             ViewBag.AllCountries = allCountries.Select(country =>
             new SelectListItem()
             {
@@ -62,12 +62,12 @@ namespace CRUD_Testing_DEMO.Controllers
 
         [Route("[action]")]
         [HttpPost]
-        public IActionResult Create(PersonAddRequest personAddRequest)
+        public async Task<IActionResult> Create(PersonAddRequest personAddRequest)
         {
             if (!ModelState.IsValid)
             {
                 // values for dropdown menu
-                List<CountryResponse> allCountries = _countriesService.GetAllCountries();
+                List<CountryResponse> allCountries = await _countriesService.GetAllCountries();
                 ViewBag.AllCountries = allCountries.Select(country =>
                 new SelectListItem()
                 {
@@ -77,18 +77,18 @@ namespace CRUD_Testing_DEMO.Controllers
                 ViewBag.Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 return View();
             }
-            PersonResponse addedPerson = _peopleService.AddPerson(personAddRequest);
+            PersonResponse addedPerson = await _peopleService.AddPerson(personAddRequest);
             return RedirectToAction("Index", "People");
         }
 
 
         [Route("[action]/{personID}")]
         [HttpGet]
-        public IActionResult Update(Guid personID)
+        public async Task<IActionResult> Update(Guid personID)
         {
 
             // Check if Id is valid and person exists
-            PersonResponse? personResponse = _peopleService.GetPersonByPersonID(personID);
+            PersonResponse? personResponse = await _peopleService.GetPersonByPersonID(personID);
 
 
             if (personResponse is null)
@@ -98,7 +98,7 @@ namespace CRUD_Testing_DEMO.Controllers
             }
 
             // provide values for dropdown menu
-            List<CountryResponse> allCountries = _countriesService.GetAllCountries();
+            List<CountryResponse> allCountries = await _countriesService.GetAllCountries();
             ViewBag.AllCountries = allCountries.Select(country =>
             new SelectListItem()
             {
@@ -113,10 +113,10 @@ namespace CRUD_Testing_DEMO.Controllers
 
         [Route("[action]/{personID}")]
         [HttpPost]
-        public IActionResult Update(PersonUpdateRequest personUpdateRequest)
+        public async Task<IActionResult> Update(PersonUpdateRequest personUpdateRequest)
         {
             // Check if Id is valid and person exists
-            PersonResponse? personResponse = _peopleService.GetPersonByPersonID(personUpdateRequest.PersonID);
+            PersonResponse? personResponse = await _peopleService.GetPersonByPersonID(personUpdateRequest.PersonID);
 
 
             if (personResponse is null)
@@ -130,7 +130,7 @@ namespace CRUD_Testing_DEMO.Controllers
                 // redirect to same view
 
                 // provide values for menu
-                List<CountryResponse> allCountries = _countriesService.GetAllCountries();
+                List<CountryResponse> allCountries = await _countriesService.GetAllCountries();
                 ViewBag.AllCountries = allCountries.Select(country =>
                 new SelectListItem()
                 {
@@ -143,16 +143,16 @@ namespace CRUD_Testing_DEMO.Controllers
             }
 
             // update the person
-            PersonResponse updatedPerson = _peopleService.UpdatePerson(personUpdateRequest);
+            PersonResponse updatedPerson = await _peopleService.UpdatePerson(personUpdateRequest);
             return RedirectToAction("Index", "People");
         }
 
 
         [Route("[action]/{personID}")]
         [HttpGet]
-        public IActionResult Delete(Guid? personID)
+        public async Task<IActionResult> Delete(Guid? personID)
         {
-            PersonResponse? personResponse = _peopleService.GetPersonByPersonID(personID);
+            PersonResponse? personResponse = await _peopleService.GetPersonByPersonID(personID);
 
             if (personResponse is null)
             {
@@ -164,14 +164,14 @@ namespace CRUD_Testing_DEMO.Controllers
 
         [Route("[action]/{personID}")]
         [HttpPost]
-        public IActionResult Delete(PersonUpdateRequest personUpdateRequest)
+        public async Task<IActionResult> Delete(PersonUpdateRequest personUpdateRequest)
         {
-            if (_peopleService.DeletePerson(personUpdateRequest.PersonID))
+            if (await _peopleService.DeletePerson(personUpdateRequest.PersonID))
             {
                 return RedirectToAction("Index");
             }
 
-            PersonResponse? personResponse = _peopleService.GetPersonByPersonID(personUpdateRequest.PersonID);
+            PersonResponse? personResponse = await _peopleService.GetPersonByPersonID(personUpdateRequest.PersonID);
 
             if (personResponse is null)
             {

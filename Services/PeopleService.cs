@@ -1,5 +1,7 @@
 using Entities;
+using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
+using System.Threading.Tasks;
 using ServiceContracts.DTO;
 using ServiceContracts.ENUMS;
 using Services.Helpers;
@@ -20,7 +22,7 @@ namespace Services
             _countriesService = countriesService;
         }
 
-        public PersonResponse AddPerson(PersonAddRequest? personAddRequest)
+        public async Task<PersonResponse> AddPerson(PersonAddRequest? personAddRequest)
         {
             if (personAddRequest is null)
             {
@@ -37,26 +39,27 @@ namespace Services
             newPerson.PersonID = Guid.NewGuid();
 
             // Insert into db with stored procedure
-            _dbContext.sp_InsertPerson(newPerson);
-            
+            // _dbContext.sp_InsertPerson(newPerson);
+
             // ALTERNATIVE WAY
-             
+
             // add person to list
-            // _dbContext.People.Add(newPerson);
+            await _dbContext.People.AddAsync(newPerson);
 
-            // // Save Changes
-            // _dbContext.SaveChanges();
+            // Save Changes
+            await _dbContext.SaveChangesAsync();
 
-            return ConvertPersonToPersonResponse(newPerson);
+            return await ConvertPersonToPersonResponse(newPerson);
         }
 
-        private PersonResponse ConvertPersonToPersonResponse(Person newPerson)
+        private async Task<PersonResponse> ConvertPersonToPersonResponse(Person newPerson)
         {
             PersonResponse newPersonResponse = newPerson.ToPersonResponse();
 
             if (newPersonResponse.CountryID != null)
             {
-                newPersonResponse.Country = _countriesService.GetCountryByID(newPersonResponse.CountryID)?.CountryName;
+                var countryResponse = await _countriesService.GetCountryByID(newPersonResponse.CountryID);
+                newPersonResponse.Country = countryResponse?.CountryName;
             }
             else
             {
@@ -66,16 +69,16 @@ namespace Services
             return newPersonResponse;
         }
 
-        public List<PersonResponse> GetAllPeople(string? searchBy, string? searchString, string? orderBy, SortOptions? sortOptions)
+        public async Task<List<PersonResponse>> GetAllPeople(string? searchBy, string? searchString, string? orderBy, SortOptions? sortOptions)
         {
-            List<PersonResponse> allPeople = _dbContext.sp_GetALLPeople().Select(p => ConvertPersonToPersonResponse(p)).ToList();
+            List<PersonResponse> allPeople = (await Task.WhenAll(_dbContext.sp_GetALLPeople().Select(async p => await ConvertPersonToPersonResponse(p)))).ToList();
 
             if (string.IsNullOrEmpty(searchBy) && string.IsNullOrEmpty(searchString) && string.IsNullOrEmpty(orderBy) && sortOptions is null)
             {
                 return allPeople;
             }
 
-            if (!string.IsNullOrEmpty(searchBy))
+            if (!string.IsNullOrEmpty(searchBy) && !string.IsNullOrEmpty(searchString))
             {
                 // Filter by
                 allPeople = searchBy switch
@@ -119,24 +122,24 @@ namespace Services
 
         }
 
-        public PersonResponse? GetPersonByPersonID(Guid? personID)
+        public async Task<PersonResponse?> GetPersonByPersonID(Guid? personID)
         {
             if (personID is null)
             {
                 return null;
             }
 
-            Person? foundPerson = _dbContext.People.Find(personID);
+            Person? foundPerson = await _dbContext.People.FindAsync(personID);
 
             if (foundPerson is null)
             {
                 return null;
             }
 
-            return ConvertPersonToPersonResponse(foundPerson);
+            return await ConvertPersonToPersonResponse(foundPerson);
         }
 
-        public PersonResponse UpdatePerson(PersonUpdateRequest? personUpdateRequest)
+        public async Task<PersonResponse> UpdatePerson(PersonUpdateRequest? personUpdateRequest)
         {
             if (personUpdateRequest is null)
             {
@@ -146,7 +149,7 @@ namespace Services
             // validate
             ValidationHelper.ModelValidation(personUpdateRequest);
 
-            Person? foundPerson = _dbContext.People.FirstOrDefault(p => p.PersonID == personUpdateRequest.PersonID);
+            Person? foundPerson = await _dbContext.People.FirstOrDefaultAsync(p => p.PersonID == personUpdateRequest.PersonID);
             if (foundPerson is null)
             {
                 throw new ArgumentException("Person not found");
@@ -161,14 +164,14 @@ namespace Services
             foundPerson.ReceiveNewsLetter = personUpdateRequest.ReceiveNewsLetter;
 
             // Save the changes
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             // _dbContext.People.Select(p => p.PersonID == personUpdateRequest.PersonID ? foundPerson : p).ToList();
 
-            return ConvertPersonToPersonResponse(foundPerson);
+            return await ConvertPersonToPersonResponse(foundPerson);
         }
 
-        public bool DeletePerson(Guid? personID)
+        public async Task<bool> DeletePerson(Guid? personID)
         {
             if (personID is null)
             {
@@ -184,7 +187,7 @@ namespace Services
 
             _dbContext.People.Remove(personFound);
 
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return true;
         }
