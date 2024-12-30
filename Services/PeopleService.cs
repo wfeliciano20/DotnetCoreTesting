@@ -1,7 +1,6 @@
 using Entities;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
-using System.Threading.Tasks;
 using ServiceContracts.DTO;
 using ServiceContracts.ENUMS;
 using Services.Helpers;
@@ -71,7 +70,7 @@ namespace Services
 
         public async Task<List<PersonResponse>> GetAllPeople(string? searchBy, string? searchString, string? orderBy, SortOptions? sortOptions)
         {
-            List<PersonResponse> allPeople = (await Task.WhenAll(_dbContext.sp_GetALLPeople().Select(async p => await ConvertPersonToPersonResponse(p)))).ToList();
+            List<PersonResponse> allPeople = (await Task.WhenAll(_dbContext.People.ToList().Select(async p => await ConvertPersonToPersonResponse(p)))).ToList();
 
             if (string.IsNullOrEmpty(searchBy) && string.IsNullOrEmpty(searchString) && string.IsNullOrEmpty(orderBy) && sortOptions is null)
             {

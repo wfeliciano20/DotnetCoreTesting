@@ -1,4 +1,5 @@
 using Entities;
+using EntityFrameworkCoreMock;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
@@ -18,8 +19,21 @@ namespace CRUDTests
 
         public PersonsServiceTest(ITestOutputHelper testOutputHelper)
         {
-            _countriesService = new CountriesService(new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>().Options));
-            _peopleService = new PeopleService(new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>().Options), _countriesService);
+            var countriesInitialData = new List<Country>() { };
+            var peopleInitialData = new List<Person>() { };
+
+
+            DbContextMock<ApplicationDbContext> dbContextMock =
+                new DbContextMock<ApplicationDbContext>(
+                    new DbContextOptionsBuilder<ApplicationDbContext>().Options);
+            var dbContext = dbContextMock.Object;
+            _countriesService = new CountriesService(dbContext);
+
+            dbContextMock.CreateDbSetMock(x => x.Countries, countriesInitialData);
+            dbContextMock.CreateDbSetMock(x => x.People, peopleInitialData);
+
+
+            _peopleService = new PeopleService(dbContext, _countriesService);
             _testOutputHelper = testOutputHelper;
         }
 

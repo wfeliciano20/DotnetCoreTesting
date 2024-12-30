@@ -10,9 +10,9 @@ namespace Entities
         {
 
         }
-        public DbSet<Person> People { get; private set; }
+        public virtual DbSet<Person> People { get; private set; }
 
-        public DbSet<Country> Countries { get; private set; }
+        public virtual DbSet<Country> Countries { get; private set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,7 +57,7 @@ namespace Entities
 
         public List<Person> sp_GetALLPeople()
         {
-            return People.FromSqlRaw("EXECUTE [dbo].[GetAllPeople]").ToList();
+            return People.FromSqlRaw("EXEC [dbo].[GetAllPeople]").ToList();
         }
 
         public int sp_InsertPerson(Person person)
