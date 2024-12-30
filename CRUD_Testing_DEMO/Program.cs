@@ -11,7 +11,7 @@ internal class Program
         builder.Services.AddControllersWithViews();
         builder.Services.AddScoped<ICountriesService, CountriesService>();
         builder.Services.AddScoped<IPeopleService, PeopleService>();
-        builder.Services.AddDbContext<PeopleDbContext>(
+        builder.Services.AddDbContext<ApplicationDbContext>(
             opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
         );
 

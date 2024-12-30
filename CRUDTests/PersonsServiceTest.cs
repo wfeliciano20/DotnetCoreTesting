@@ -1,7 +1,3 @@
-
-
-using System.Reflection;
-using System.Threading.Tasks;
 using Entities;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
@@ -22,8 +18,8 @@ namespace CRUDTests
 
         public PersonsServiceTest(ITestOutputHelper testOutputHelper)
         {
-            _countriesService = new CountriesService(new PeopleDbContext(new DbContextOptionsBuilder<PeopleDbContext>().Options));
-            _peopleService = new PeopleService(new PeopleDbContext(new DbContextOptionsBuilder<PeopleDbContext>().Options), _countriesService);
+            _countriesService = new CountriesService(new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>().Options));
+            _peopleService = new PeopleService(new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>().Options), _countriesService);
             _testOutputHelper = testOutputHelper;
         }
 

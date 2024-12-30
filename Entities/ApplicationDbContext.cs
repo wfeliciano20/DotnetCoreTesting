@@ -1,12 +1,12 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace Entities
 {
-    public class PeopleDbContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
 
-        public PeopleDbContext(DbContextOptions<PeopleDbContext> options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
 
         }
@@ -73,7 +73,7 @@ namespace Entities
                 new SqlParameter("@Address", person.Address),
                 new SqlParameter("@ReceiveNewsLetter", person.ReceiveNewsLetter),
             };
-            return Database.ExecuteSqlRaw("EXECUTE [dbo].[InsertPerson] @PersonID, @PersonName, @Email, @DateOfBirth, @Gender, @CountryID, @Address, @ReceiveNewsLetter",parameters);
+            return Database.ExecuteSqlRaw("EXECUTE [dbo].[InsertPerson] @PersonID, @PersonName, @Email, @DateOfBirth, @Gender, @CountryID, @Address, @ReceiveNewsLetter", parameters);
         }
     }
 }
