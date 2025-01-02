@@ -1,5 +1,6 @@
 using Entities;
 using EntityFrameworkCoreMock;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
@@ -36,7 +37,9 @@ public class CountriesServiceTest
         CountryAddRequest countryAddRequest = null;
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await _countriesService.AddCountry(countryAddRequest));
+        //await Assert.ThrowsAsync<ArgumentNullException>(async () => await _countriesService.AddCountry(countryAddRequest));
+        Func<Task> action = async () => await _countriesService.AddCountry(countryAddRequest);
+        await action.Should().ThrowAsync<ArgumentNullException>();
 
     }
 
@@ -55,7 +58,11 @@ public class CountriesServiceTest
         };
 
         // Assert
-        await Assert.ThrowsAsync<ArgumentException>(async () => await _countriesService.AddCountry(countryAddRequest));
+        //await Assert.ThrowsAsync<ArgumentException>(async () => await _countriesService.AddCountry(countryAddRequest));
+
+        Func<Task> action = async () => await _countriesService.AddCountry(countryAddRequest);
+
+        await action.Should().ThrowAsync<ArgumentException>();
     }
 
     /*  
@@ -72,11 +79,20 @@ public class CountriesServiceTest
             CountryName = "Puerto Rico"
         };
 
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        //await Assert.ThrowsAsync<ArgumentException>(async () =>
+        //{
+        //    await _countriesService.AddCountry(countryAddRequest);
+        //    await _countriesService.AddCountry(countryAddRequest);
+        //});
+
+        Func<Task> action = async () =>
         {
             await _countriesService.AddCountry(countryAddRequest);
             await _countriesService.AddCountry(countryAddRequest);
-        });
+        };
+
+        await action.Should().ThrowAsync<ArgumentException>();
+
     }
 
     /*
@@ -109,8 +125,11 @@ public class CountriesServiceTest
         var allCountries = await _countriesService.GetAllCountries();
 
         //Assert
-        Assert.True(actual.CountryId != Guid.Empty);
-        Assert.Contains(actual, allCountries);
+        //Assert.True(actual.CountryId != Guid.Empty);
+
+        actual.CountryId.Should().NotBe(Guid.Empty);
+        //Assert.Contains(actual, allCountries);
+        allCountries.Should().ContainEquivalentOf(expected);
     }
 
     #endregion
@@ -127,7 +146,8 @@ public class CountriesServiceTest
         List<CountryResponse> actual_country_response_list
                     = await _countriesService.GetAllCountries();
         // Assert
-        Assert.Empty(actual_country_response_list);
+        //Assert.Empty(actual_country_response_list);
+        actual_country_response_list.Should().BeEmpty();
     }
 
     [Fact]
@@ -154,8 +174,8 @@ public class CountriesServiceTest
         // Assert
         foreach (var expected_country_response in add_country_response_list)
         {
-            Console.WriteLine(expected_country_response.CountryName);
-            Assert.Contains(expected_country_response, actual_country_response_list);
+            //Assert.Contains(expected_country_response, actual_country_response_list);
+            actual_country_response_list.Should().ContainEquivalentOf(expected_country_response);
         }
     }
 
@@ -172,7 +192,8 @@ public class CountriesServiceTest
         // Act
         CountryResponse? result = await _countriesService.GetCountryByID(countryID);
         // Assert
-        Assert.Null(result);
+        // Assert.Null(result);
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -190,7 +211,8 @@ public class CountriesServiceTest
         // Act
         CountryResponse? actualResponse = await _countriesService.GetCountryByID(expectedCountry.CountryId);
 
-        Assert.Equal(expectedCountry, actualResponse);
+        // Assert.Equal(expectedCountry, actualResponse);
+        actualResponse.Should().Equals(expectedCountry);
     }
 
     [Fact]
@@ -211,7 +233,8 @@ public class CountriesServiceTest
 
         // Assert
 
-        Assert.Null(actual_response);
+        //Assert.Null(actual_response);
+        actual_response.Should().BeNull();
     }
 
 
